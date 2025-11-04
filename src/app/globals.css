@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Fredoka+One:wght@400&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Comic Neue', cursive;
+  }
+
+  body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-400 to-primary-600 hover:from-primary-500 hover:to-primary-700
+           text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition-all duration-200
+           hover:scale-105 hover:shadow-xl active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply bg-gradient-to-r from-secondary-400 to-secondary-600 hover:from-secondary-500 hover:to-secondary-700
+           text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition-all duration-200
+           hover:scale-105 hover:shadow-xl active:scale-95;
+  }
+
+  .card {
+    @apply bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl border-4 border-white/20 p-6;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl border-4 border-primary-200 focus:border-primary-400
+           focus:outline-none focus:ring-2 focus:ring-primary-200 text-lg transition-all duration-200;
+  }
+
+  .select-field {
+    @apply w-full px-4 py-3 rounded-xl border-4 border-primary-200 focus:border-primary-400
+           focus:outline-none focus:ring-2 focus:ring-primary-200 text-lg transition-all duration-200
+           bg-white cursor-pointer;
+  }
+}
