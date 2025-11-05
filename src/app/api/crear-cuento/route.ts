@@ -33,15 +33,25 @@ export async function POST(request: NextRequest) {
 
     const result = await response.json()
 
+    // Debug: Log de la respuesta de n8n
+    console.log('Respuesta de n8n:', JSON.stringify(result, null, 2))
+
+    // n8n devuelve un array, tomar el primer elemento
+    const data = Array.isArray(result) ? result[0] : result
+
     // Asumiendo que n8n devuelve las URLs de las imágenes generadas
     // Ajusta esto según la respuesta real de tu workflow
-    return NextResponse.json({
-      cuentoUrl: result.cuento_url || result.cuentoUrl,
-      fichaUrl: result.ficha_url || result.fichaUrl,
+    const finalResponse = {
+      cuentoUrl: data.cuento_url || data.cuentoUrl,
+      fichaUrl: data.ficha_url || data.fichaUrl,
       tema: formData.tema,
       grado: formData.grado,
       area: formData.area
-    })
+    }
+
+    console.log('Respuesta final enviada:', JSON.stringify(finalResponse, null, 2))
+
+    return NextResponse.json(finalResponse)
 
   } catch (error) {
     console.error('Error al procesar el cuento:', error)
