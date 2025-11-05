@@ -28,10 +28,23 @@ export async function POST(request: NextRequest) {
     })
 
     if (!response.ok) {
-      throw new Error(`Error del webhook: ${response.status}`)
+      const errorText = await response.text()
+      console.log('Error response from n8n:', response.status, errorText)
+      throw new Error(`Error del webhook: ${response.status} - ${errorText}`)
     }
 
-    const result = await response.json()
+    // Log raw response before parsing
+    const responseText = await response.text()
+    console.log('Raw response text from n8n:', responseText)
+
+    let result
+    try {
+      result = JSON.parse(responseText)
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError)
+      console.log('Response text that failed to parse:', responseText)
+      throw new Error('Invalid JSON response from n8n webhook')
+    }
 
     // Debug: Log de la respuesta de n8n
     console.log('Respuesta de n8n RAW:', JSON.stringify(result, null, 2))
