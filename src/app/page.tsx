@@ -9,9 +9,15 @@ export default function Home() {
   const [result, setResult] = useState<StoryResult | null>(null)
 
   const convertToThumbnail = (driveUrl: string | undefined) => {
-    if (!driveUrl) return ''
+    console.log('convertToThumbnail called with:', driveUrl, typeof driveUrl)
+    if (!driveUrl) {
+      console.log('URL is falsy, returning empty string')
+      return ''
+    }
     const fileId = driveUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]
-    return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w800` : driveUrl
+    const result = fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w800` : driveUrl
+    console.log('convertToThumbnail result:', result)
+    return result
   }
 
   const handleFormSubmit = async (data: FormData) => {
