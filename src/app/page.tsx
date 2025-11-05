@@ -8,6 +8,11 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<StoryResult | null>(null)
 
+  const convertToThumbnail = (driveUrl: string) => {
+    const fileId = driveUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]
+    return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w800` : driveUrl
+  }
+
   const handleFormSubmit = async (data: FormData) => {
     setIsLoading(true)
     try {
@@ -71,7 +76,7 @@ export default function Home() {
                 </h3>
                 <div className="bg-white rounded-xl p-4 shadow-inner">
                   <img
-                    src={result.cuentoUrl}
+                    src={convertToThumbnail(result.cuentoUrl)}
                     alt="Ficha de cuento"
                     className="w-full rounded-lg shadow-lg hover:scale-105 transition-transform duration-200"
                   />
@@ -91,7 +96,7 @@ export default function Home() {
                 </h3>
                 <div className="bg-white rounded-xl p-4 shadow-inner">
                   <img
-                    src={result.fichaUrl}
+                    src={convertToThumbnail(result.fichaUrl)}
                     alt="Ficha de comprensión"
                     className="w-full rounded-lg shadow-lg hover:scale-105 transition-transform duration-200"
                   />
