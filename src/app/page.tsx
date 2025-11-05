@@ -8,7 +8,8 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<StoryResult | null>(null)
 
-  const convertToThumbnail = (driveUrl: string) => {
+  const convertToThumbnail = (driveUrl: string | undefined) => {
+    if (!driveUrl) return ''
     const fileId = driveUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]
     return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w800` : driveUrl
   }
@@ -75,11 +76,17 @@ export default function Home() {
                   📖 Ficha de Lectura
                 </h3>
                 <div className="bg-white rounded-xl p-4 shadow-inner">
-                  <img
-                    src={convertToThumbnail(result.cuentoUrl)}
-                    alt="Ficha de cuento"
-                    className="w-full rounded-lg shadow-lg hover:scale-105 transition-transform duration-200"
-                  />
+                  {result.cuentoUrl ? (
+                    <img
+                      src={convertToThumbnail(result.cuentoUrl)}
+                      alt="Ficha de cuento"
+                      className="w-full rounded-lg shadow-lg hover:scale-105 transition-transform duration-200"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-48 text-gray-500">
+                      Cargando imagen...
+                    </div>
+                  )}
                 </div>
                 <a
                   href={result.cuentoUrl}
@@ -95,11 +102,17 @@ export default function Home() {
                   ❓ Comprensión Lectora
                 </h3>
                 <div className="bg-white rounded-xl p-4 shadow-inner">
-                  <img
-                    src={convertToThumbnail(result.fichaUrl)}
-                    alt="Ficha de comprensión"
-                    className="w-full rounded-lg shadow-lg hover:scale-105 transition-transform duration-200"
-                  />
+                  {result.fichaUrl ? (
+                    <img
+                      src={convertToThumbnail(result.fichaUrl)}
+                      alt="Ficha de comprensión"
+                      className="w-full rounded-lg shadow-lg hover:scale-105 transition-transform duration-200"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-48 text-gray-500">
+                      Cargando imagen...
+                    </div>
+                  )}
                 </div>
                 <a
                   href={result.fichaUrl}
