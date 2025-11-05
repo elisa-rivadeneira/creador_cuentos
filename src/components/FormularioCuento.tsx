@@ -11,6 +11,7 @@ interface Props {
 export default function FormularioCuento({ onSubmit, isLoading }: Props) {
   const [formData, setFormData] = useState<FormData>({
     tema: '',
+    ideas: '',
     grado: '',
     area: '',
     formatoImagen: 'cabecera'
@@ -54,6 +55,19 @@ export default function FormularioCuento({ onSubmit, isLoading }: Props) {
             placeholder="Ej: Los animales del bosque, El ciclo del agua..."
             className="input-field"
             required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-lg font-bold text-primary-700">
+            💡 Ideas para el cuento (opcional)
+          </label>
+          <textarea
+            value={formData.ideas}
+            onChange={(e) => setFormData({ ...formData, ideas: e.target.value })}
+            placeholder="Ej: Que aparezcan personajes divertidos, que tenga una moraleja sobre la amistad..."
+            className="input-field min-h-[100px] resize-none"
+            rows={4}
           />
         </div>
 

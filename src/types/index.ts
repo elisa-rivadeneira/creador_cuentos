@@ -1,5 +1,6 @@
 export interface FormData {
   tema: string;
+  ideas: string;
   grado: string;
   area: string;
   formatoImagen: 'cabecera' | 'lado' | 'cuadrado';

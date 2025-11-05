@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         tema: formData.tema,
+        ideas: formData.ideas,
         grado: formData.grado,
         area: formData.area,
         formato_imagen: formData.formatoImagen,
