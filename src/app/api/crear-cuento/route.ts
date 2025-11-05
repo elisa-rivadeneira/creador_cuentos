@@ -51,15 +51,19 @@ export async function POST(request: NextRequest) {
     console.log('Es array?', Array.isArray(result))
     console.log('Longitud si es array:', Array.isArray(result) ? result.length : 'N/A')
 
-    // n8n devuelve un array, tomar el primer elemento
+    // n8n devuelve un array con un objeto, extraer el primer elemento
     const data = Array.isArray(result) ? result[0] : result
     console.log('Data después de procesar:', JSON.stringify(data, null, 2))
 
-    // Asumiendo que n8n devuelve las URLs de las imágenes generadas
-    // Ajusta esto según la respuesta real de tu workflow
+    // Extraer las URLs correctamente
+    const cuentoUrl = data?.cuento_url || data?.cuentoUrl || ''
+    const fichaUrl = data?.ficha_url || data?.fichaUrl || ''
+
+    console.log('URLs extraídas - cuento:', cuentoUrl, 'ficha:', fichaUrl)
+
     const finalResponse = {
-      cuentoUrl: data.cuento_url || data.cuentoUrl,
-      fichaUrl: data.ficha_url || data.fichaUrl,
+      cuentoUrl: cuentoUrl,
+      fichaUrl: fichaUrl,
       tema: formData.tema,
       grado: formData.grado,
       area: formData.area
