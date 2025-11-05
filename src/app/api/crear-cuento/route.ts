@@ -34,10 +34,13 @@ export async function POST(request: NextRequest) {
     const result = await response.json()
 
     // Debug: Log de la respuesta de n8n
-    console.log('Respuesta de n8n:', JSON.stringify(result, null, 2))
+    console.log('Respuesta de n8n RAW:', JSON.stringify(result, null, 2))
+    console.log('Es array?', Array.isArray(result))
+    console.log('Longitud si es array:', Array.isArray(result) ? result.length : 'N/A')
 
     // n8n devuelve un array, tomar el primer elemento
     const data = Array.isArray(result) ? result[0] : result
+    console.log('Data después de procesar:', JSON.stringify(data, null, 2))
 
     // Asumiendo que n8n devuelve las URLs de las imágenes generadas
     // Ajusta esto según la respuesta real de tu workflow
