@@ -111,7 +111,7 @@ export default function FormularioCuento({ onSubmit, isLoading }: Props) {
           </div>
         </div>
 
-        <div className="space-y-3">
+        {/* <div className="space-y-3">
           <label className="block text-lg font-bold text-success-700">
             🎨 ¿Cómo quieres la imagen?
           </label>
@@ -144,7 +144,7 @@ export default function FormularioCuento({ onSubmit, isLoading }: Props) {
               </label>
             ))}
           </div>
-        </div>
+        </div> */}
 
         <div className="text-center pt-4">
           <button
