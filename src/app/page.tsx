@@ -20,6 +20,12 @@ export default function Home() {
     return result
   }
 
+  const convertToDownload = (driveUrl: string | undefined) => {
+    if (!driveUrl) return ''
+    const fileId = driveUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]
+    return fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : driveUrl
+  }
+
   const handleFormSubmit = async (data: FormData) => {
     setIsLoading(true)
     try {
@@ -95,7 +101,7 @@ export default function Home() {
                   )}
                 </div>
                 <a
-                  href={result.cuentoUrl}
+                  href={convertToDownload(result.cuentoUrl)}
                   download
                   className="btn-secondary w-full mt-4 inline-block text-center"
                 >
@@ -121,7 +127,7 @@ export default function Home() {
                   )}
                 </div>
                 <a
-                  href={result.fichaUrl}
+                  href={convertToDownload(result.fichaUrl)}
                   download
                   className="btn-primary w-full mt-4 inline-block text-center"
                 >
