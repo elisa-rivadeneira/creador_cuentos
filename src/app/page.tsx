@@ -53,7 +53,7 @@ export default function Home() {
     <main className="min-h-screen p-4">
       <div className="container mx-auto py-8">
         <div className="text-center mb-12">
-          <h1 className="text-6xl font-fun text-white mb-4 drop-shadow-lg animate-float">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-fun text-white mb-4 drop-shadow-lg animate-float">
             🏰 Creador de Cuentos Mágicos 🏰
           </h1>
           <p className="text-xl text-white/90 font-bold drop-shadow">
