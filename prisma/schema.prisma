@@ -49,6 +49,8 @@ model User {
   isPaid          Boolean  @default(false)  // Si ha pagado
   paidAt          DateTime? // Fecha de pago
   lastStoryDate   DateTime? // Última fecha que creó un cuento
+  dailyStoriesCount Int    @default(0)  // Cuentos creados hoy (premium)
+  lastResetDate   DateTime? // Última fecha de reset del contador diario
 
   stories         Story[]
   payments        Payment[]

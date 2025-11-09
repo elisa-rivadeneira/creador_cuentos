@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { FormData } from '@/types'
+import { checkDailyLimits, isNewDay } from '@/lib/dailyLimits'
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,33 +28,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verificar límites
-    const today = new Date()
-    const freeStoriesUsed = user.freeStoriesUsed
-    const isPaid = user.isPaid
+    // Verificar límites usando la nueva lógica
+    const dailyLimits = checkDailyLimits(
+      user.isPaid,
+      user.dailyStoriesCount,
+      user.lastResetDate,
+      user.freeStoriesUsed
+    )
 
-    if (isPaid) {
-      // Usuario premium: verificar si puede crear hoy
-      if (user.lastStoryDate) {
-        const lastStory = new Date(user.lastStoryDate)
-        const diffTime = today.getTime() - lastStory.getTime()
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    if (!dailyLimits.canCreate) {
+      const errorMessage = user.isPaid
+        ? `Has alcanzado tu límite de 3 cuentos diarios. Podrás crear más a las 00:00.`
+        : 'Has agotado tus 2 cuentos gratuitos. Hazte Premium para continuar.'
 
-        if (diffDays < 1) {
-          return NextResponse.json(
-            { error: 'Ya has creado tu cuento diario. Vuelve mañana.' },
-            { status: 403 }
-          )
-        }
-      }
-    } else {
-      // Usuario gratuito: verificar límite
-      if (freeStoriesUsed >= 2) {
-        return NextResponse.json(
-          { error: 'Has agotado tus cuentos gratuitos. Hazte Premium para continuar.' },
-          { status: 403 }
-        )
-      }
+      return NextResponse.json(
+        { error: errorMessage },
+        { status: 403 }
+      )
     }
 
     const formData: FormData = await request.json()
@@ -123,13 +114,30 @@ export async function POST(request: NextRequest) {
 
     console.log('Respuesta final enviada:', JSON.stringify(finalResponse, null, 2))
 
-    // Actualizar contador de usuario y fecha
+    // Actualizar contadores según el tipo de usuario
+    const today = new Date()
+    const updateData: any = {
+      lastStoryDate: today
+    }
+
+    if (user.isPaid) {
+      // Usuario premium: actualizar contador diario
+      if (dailyLimits.isNewDay) {
+        // Es un nuevo día, resetear contador
+        updateData.dailyStoriesCount = 1
+        updateData.lastResetDate = today
+      } else {
+        // Mismo día, incrementar contador
+        updateData.dailyStoriesCount = user.dailyStoriesCount + 1
+      }
+    } else {
+      // Usuario gratuito: incrementar contador total
+      updateData.freeStoriesUsed = user.freeStoriesUsed + 1
+    }
+
     await prisma.user.update({
       where: { id: session.user.id },
-      data: {
-        freeStoriesUsed: isPaid ? user.freeStoriesUsed : user.freeStoriesUsed + 1,
-        lastStoryDate: today
-      }
+      data: updateData
     })
 
     // Guardar el cuento en la base de datos

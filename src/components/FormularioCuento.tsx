@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Session } from 'next-auth'
 import Link from 'next/link'
 import { FormData } from '@/types'
+import { checkDailyLimits, formatTimeUntilReset } from '@/lib/dailyLimits'
 
 interface Props {
   onSubmit: (data: FormData) => void
@@ -26,28 +27,23 @@ export default function FormularioCuento({ onSubmit, isLoading, session }: Props
     }
   }
 
-  // Verificar si el usuario puede crear cuentos
-  const canCreateStory = () => {
-    if (!session?.user) return false
-
-    const freeStoriesUsed = session.user.freeStoriesUsed || 0
-    const isPaid = session.user.isPaid || false
-
-    if (isPaid) {
-      // Usuario premium: verificar si puede crear hoy
-      const lastStoryDate = session.user.lastStoryDate
-      if (!lastStoryDate) return true
-
-      const today = new Date()
-      const lastStory = new Date(lastStoryDate)
-      const diffTime = today.getTime() - lastStory.getTime()
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-      return diffDays >= 1
-    } else {
-      // Usuario gratuito: verificar si tiene cuentos restantes
-      return freeStoriesUsed < 2
+  // Verificar límites usando la nueva lógica
+  const getDailyLimits = () => {
+    if (!session?.user) {
+      return {
+        canCreate: false,
+        storiesLeft: 0,
+        resetTime: new Date(),
+        isNewDay: false
+      }
     }
+
+    return checkDailyLimits(
+      session.user.isPaid || false,
+      session.user.dailyStoriesCount || 0,
+      session.user.lastResetDate || null,
+      session.user.freeStoriesUsed || 0
+    )
   }
 
   const getStatusMessage = () => {
@@ -58,34 +54,27 @@ export default function FormularioCuento({ onSubmit, isLoading, session }: Props
       }
     }
 
-    const freeStoriesUsed = session.user.freeStoriesUsed || 0
+    const limits = getDailyLimits()
     const isPaid = session.user.isPaid || false
 
     if (isPaid) {
-      const lastStoryDate = session.user.lastStoryDate
-      if (lastStoryDate) {
-        const today = new Date()
-        const lastStory = new Date(lastStoryDate)
-        const diffTime = today.getTime() - lastStory.getTime()
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-        if (diffDays < 1) {
-          return {
-            type: 'warning',
-            message: '⏰ Ya creaste tu cuento de hoy. ¡Vuelve mañana!'
-          }
+      if (limits.canCreate) {
+        return {
+          type: 'success',
+          message: `⭐ Usuario Premium! Te quedan ${limits.storiesLeft} de 3 cuentos hoy`
+        }
+      } else {
+        const timeLeft = formatTimeUntilReset(limits.resetTime)
+        return {
+          type: 'warning',
+          message: `⏰ Has creado tus 3 cuentos diarios. Renueva en ${timeLeft}`
         }
       }
-      return {
-        type: 'success',
-        message: '⭐ ¡Usuario Premium! Puedes crear tu cuento diario'
-      }
     } else {
-      const remaining = 2 - freeStoriesUsed
-      if (remaining > 0) {
+      if (limits.canCreate) {
         return {
           type: 'info',
-          message: `🎁 Te quedan ${remaining} cuentos gratis`
+          message: `🎁 Te quedan ${limits.storiesLeft} de 2 cuentos gratis`
         }
       } else {
         return {
@@ -97,7 +86,8 @@ export default function FormularioCuento({ onSubmit, isLoading, session }: Props
   }
 
   const statusMessage = getStatusMessage()
-  const canCreate = canCreateStory()
+  const dailyLimits = getDailyLimits()
+  const canCreate = dailyLimits.canCreate
 
   const grados = ['1°', '2°', '3°', '4°', '5°', '6°']
   const formatosImagen = [

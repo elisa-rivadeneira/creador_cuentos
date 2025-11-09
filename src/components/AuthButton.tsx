@@ -2,6 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
+import { checkDailyLimits } from '@/lib/dailyLimits'
 
 export default function AuthButton() {
   const { data: session, status } = useSession()
@@ -13,15 +14,19 @@ export default function AuthButton() {
   }
 
   if (session?.user) {
-    const freeStoriesLeft = 2 - (session.user.freeStoriesUsed || 0)
-    const showStoriesCount = !session.user.isPaid && freeStoriesLeft >= 0
+    const limits = checkDailyLimits(
+      session.user.isPaid || false,
+      session.user.dailyStoriesCount || 0,
+      session.user.lastResetDate || null,
+      session.user.freeStoriesUsed || 0
+    )
 
     return (
       <div className="flex items-center gap-4">
-        {showStoriesCount && (
+        {!session.user.isPaid && (
           <div className="bg-green-500/90 text-white px-3 py-1 rounded-full text-sm font-bold">
-            {freeStoriesLeft > 0
-              ? `🎁 ${freeStoriesLeft} cuentos gratis restantes`
+            {limits.storiesLeft > 0
+              ? `🎁 ${limits.storiesLeft} cuentos gratis restantes`
               : '💳 Cuentos gratis agotados'
             }
           </div>
@@ -29,7 +34,7 @@ export default function AuthButton() {
 
         {session.user.isPaid && (
           <div className="bg-gold-500/90 text-white px-3 py-1 rounded-full text-sm font-bold">
-            ⭐ Usuario Premium
+            ⭐ Premium: {limits.storiesLeft}/3 hoy
           </div>
         )}
 

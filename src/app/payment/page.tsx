@@ -251,7 +251,7 @@ export default function Payment() {
             <ul className="text-sm space-y-2">
               <li className="flex items-center gap-2">
                 <span className="text-green-500">✓</span>
-                1 cuento diario ilimitado
+                3 cuentos cada día
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-green-500">✓</span>

@@ -23,6 +23,8 @@ declare module 'next-auth' {
       isPaid?: boolean
       paidAt?: Date | null
       lastStoryDate?: Date | null
+      dailyStoriesCount?: number
+      lastResetDate?: Date | null
     } & DefaultSession['user']
   }
 }

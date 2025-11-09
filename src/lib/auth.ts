@@ -101,7 +101,9 @@ export const authOptions: NextAuthOptions = {
             freeStoriesUsed: true,
             isPaid: true,
             paidAt: true,
-            lastStoryDate: true
+            lastStoryDate: true,
+            dailyStoriesCount: true,
+            lastResetDate: true
           }
         })
 
@@ -110,6 +112,8 @@ export const authOptions: NextAuthOptions = {
           session.user.isPaid = userInfo.isPaid
           session.user.paidAt = userInfo.paidAt
           session.user.lastStoryDate = userInfo.lastStoryDate
+          session.user.dailyStoriesCount = userInfo.dailyStoriesCount
+          session.user.lastResetDate = userInfo.lastResetDate
         }
       }
       return session
