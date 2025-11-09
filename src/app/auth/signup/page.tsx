@@ -134,7 +134,7 @@ export default function SignUp() {
               <li>✅ 2 cuentos completamente GRATIS</li>
               <li>🎨 Cuentos personalizados con imágenes</li>
               <li>📚 Fichas de comprensión lectora</li>
-              <li>💳 Acceso premium por solo 20 soles</li>
+              <li>💳 Acceso premium por solo 25 soles</li>
             </ul>
           </div>
 

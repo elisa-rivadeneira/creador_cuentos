@@ -48,6 +48,14 @@ export default function AuthButton() {
           >
             👤 Perfil
           </Link>
+          {session.user.email === 'admin@smartchatix.com' && (
+            <Link
+              href="/admin"
+              className="text-purple-600 hover:text-purple-700 font-bold text-sm mx-2"
+            >
+              🔧 Admin
+            </Link>
+          )}
           <button
             onClick={() => signOut({ callbackUrl: '/' })}
             className="text-red-600 hover:text-red-700 font-bold text-sm"

@@ -8,10 +8,7 @@ import Link from 'next/link'
 export default function Payment() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
   const [paymentStep, setPaymentStep] = useState<'info' | 'payment' | 'confirmation'>('info')
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [yapeTxId, setYapeTxId] = useState('')
 
   useEffect(() => {
     // Redirigir si no hay sesión
@@ -41,59 +38,27 @@ export default function Payment() {
     return null
   }
 
-  const handlePayment = async () => {
-    setLoading(true)
-    try {
-      const response = await fetch('/api/payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phoneNumber,
-          yapeTxId
-        }),
-      })
-
-      if (response.ok) {
-        setPaymentStep('confirmation')
-        // Recargar la página después de 3 segundos para actualizar la sesión
-        setTimeout(() => {
-          if (typeof window !== 'undefined') {
-            window.location.reload()
-          }
-        }, 3000)
-      } else {
-        alert('Error al procesar el pago. Por favor intenta de nuevo.')
-      }
-    } catch (error) {
-      console.error('Error:', error)
-      alert('Error al procesar el pago. Por favor intenta de nuevo.')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const procesoSteps = [
     {
       emoji: '📱',
-      title: 'Abre tu app Yape',
-      desc: 'Ingresa a tu aplicación Yape desde tu celular'
+      title: 'Escanea el QR',
+      desc: 'O yapea a 967-717-179'
     },
     {
-      emoji: '💸',
-      title: 'Yapea 20 soles',
-      desc: 'Envía 20 soles al número 967-717-179'
+      emoji: '💰',
+      title: 'Paga 25 soles',
+      desc: 'Transferencia por Yape'
     },
     {
       emoji: '📸',
-      title: 'Toma captura',
-      desc: 'Guarda el comprobante con el ID de la operación'
+      title: 'Captura pantalla',
+      desc: 'Del comprobante de pago'
     },
     {
-      emoji: '✅',
-      title: 'Confirma aquí',
-      desc: 'Ingresa el ID de la operación para activar tu cuenta Premium'
+      emoji: '📱',
+      title: 'Envía por WhatsApp',
+      desc: 'Para confirmar tu pago'
     }
   ]
 
@@ -130,61 +95,74 @@ export default function Payment() {
   }
 
   if (paymentStep === 'payment') {
+    const whatsappMessage = `Hola! Acabo de hacer el pago de 25 soles para activar mi cuenta Premium de CuentaCuentos.
+
+Mi email: ${session?.user?.email}
+Mi nombre: ${session?.user?.name}
+
+He adjuntado el comprobante de Yape. Por favor activen mi cuenta Premium.
+
+¡Gracias!`
+
+    const whatsappUrl = `https://wa.me/51967717179?text=${encodeURIComponent(whatsappMessage)}`
+
     return (
       <main className="min-h-screen flex items-center justify-center p-4">
-        <div className="card max-w-md w-full">
+        <div className="card max-w-lg w-full">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-fun text-primary-600 mb-2">
-              💳 Confirmar Pago
+              💰 Realizar Pago
             </h1>
             <p className="text-gray-600">
-              Ingresa los datos de tu transferencia
+              Sigue estos pasos para activar tu cuenta Premium
             </p>
           </div>
 
           <div className="space-y-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-bold text-blue-800 mb-2">📝 Datos para Yape:</h3>
-              <div className="text-sm text-blue-700 space-y-1">
-                <p><strong>Número:</strong> 987-654-321</p>
-                <p><strong>Nombre:</strong> SmartChatix</p>
-                <p><strong>Monto:</strong> S/ 20.00</p>
+            {/* Datos de Yape */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 className="font-bold text-blue-800 mb-4 text-center">📱 Datos para Yape</h3>
+              <div className="text-center space-y-2">
+                <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
+                  <p className="text-sm text-gray-600">Número de celular:</p>
+                  <p className="text-2xl font-bold text-blue-800">967-717-179</p>
+                </div>
+                <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
+                  <p className="text-sm text-gray-600">Monto a transferir:</p>
+                  <p className="text-3xl font-bold text-green-600">S/ 25.00</p>
+                </div>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="block text-sm font-bold text-gray-700">
-                  📱 Tu número de celular
-                </label>
-                <input
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="987654321"
-                  className="input-field"
-                  required
-                />
+            {/* QR Code placeholder */}
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-lg p-6">
+              <h3 className="font-bold text-purple-800 mb-4 text-center">📱 Escanea el QR</h3>
+              <div className="flex justify-center">
+                <div className="bg-white p-4 rounded-lg border-2 border-purple-300">
+                  <div className="w-32 h-32 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-500 text-sm text-center">
+                      QR Code<br/>967-717-179
+                    </span>
+                  </div>
+                </div>
               </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-bold text-gray-700">
-                  🆔 ID de operación Yape
-                </label>
-                <input
-                  type="text"
-                  value={yapeTxId}
-                  onChange={(e) => setYapeTxId(e.target.value)}
-                  placeholder="Ej: 12345678"
-                  className="input-field"
-                  required
-                />
-                <p className="text-xs text-gray-500">
-                  Encontrarás este número en el comprobante de Yape
-                </p>
-              </div>
+              <p className="text-center text-purple-700 text-sm mt-2">
+                O yapea directamente al número: <strong>967-717-179</strong>
+              </p>
             </div>
 
+            {/* Paso siguiente */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+              <h3 className="font-bold text-yellow-800 mb-4 text-center">📸 Después del pago</h3>
+              <ol className="list-decimal list-inside space-y-2 text-yellow-700">
+                <li>Toma captura del comprobante de Yape</li>
+                <li>Haz clic en el botón de WhatsApp abajo</li>
+                <li>Adjunta la captura del comprobante</li>
+                <li>Espera confirmación (máximo 24 horas)</li>
+              </ol>
+            </div>
+
+            {/* Botones */}
             <div className="flex gap-3">
               <button
                 onClick={() => setPaymentStep('info')}
@@ -192,22 +170,14 @@ export default function Payment() {
               >
                 ← Volver
               </button>
-              <button
-                onClick={handlePayment}
-                disabled={loading || !phoneNumber || !yapeTxId}
-                className={`btn-primary flex-1 ${
-                  loading || !phoneNumber || !yapeTxId ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary flex-1 text-center"
               >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Verificando...
-                  </span>
-                ) : (
-                  '✅ Confirmar Pago'
-                )}
-              </button>
+                📱 Enviar a WhatsApp
+              </a>
             </div>
           </div>
         </div>
@@ -223,7 +193,7 @@ export default function Payment() {
             ⭐ Hazte Premium
           </h1>
           <p className="text-gray-600">
-            Desbloquea cuentos ilimitados por solo 20 soles
+            3 cuentos diarios por un mes por solo 25 soles
           </p>
         </div>
 

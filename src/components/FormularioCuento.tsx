@@ -128,7 +128,7 @@ export default function FormularioCuento({ onSubmit, isLoading, session }: Props
         {session?.user && !session.user.isPaid && (session.user.freeStoriesUsed || 0) >= 2 && (
           <div className="text-center mt-3">
             <Link href="/payment" className="btn-primary">
-              💳 Hazte Premium (20 soles)
+              💳 Hazte Premium (25 soles)
             </Link>
           </div>
         )}
