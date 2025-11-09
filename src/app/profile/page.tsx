@@ -72,16 +72,30 @@ export default function Profile() {
     }
   }
 
-  const convertToThumbnail = (driveUrl: string | null) => {
-    if (!driveUrl) return ''
-    const fileId = driveUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]
-    return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w200` : driveUrl
+  const convertToThumbnail = (url: string | null) => {
+    if (!url) return ''
+
+    // Si es una URL de ninjaerp.com, devolverla tal como está
+    if (url.includes('ninjaerp.com')) {
+      return url
+    }
+
+    // Para URLs de Google Drive (backward compatibility)
+    const fileId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]
+    return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w200` : url
   }
 
-  const convertToDownload = (driveUrl: string | null) => {
-    if (!driveUrl) return ''
-    const fileId = driveUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]
-    return fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : driveUrl
+  const convertToDownload = (url: string | null) => {
+    if (!url) return ''
+
+    // Si es una URL de ninjaerp.com, devolverla tal como está
+    if (url.includes('ninjaerp.com')) {
+      return url
+    }
+
+    // Para URLs de Google Drive (backward compatibility)
+    const fileId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]
+    return fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : url
   }
 
   const formatDate = (date: Date | string) => {

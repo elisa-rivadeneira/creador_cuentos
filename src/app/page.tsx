@@ -11,22 +11,37 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<StoryResult | null>(null)
 
-  const convertToThumbnail = (driveUrl: string | undefined) => {
-    console.log('convertToThumbnail called with:', driveUrl, typeof driveUrl)
-    if (!driveUrl) {
+  const convertToThumbnail = (url: string | undefined) => {
+    console.log('convertToThumbnail called with:', url, typeof url)
+    if (!url) {
       console.log('URL is falsy, returning empty string')
       return ''
     }
-    const fileId = driveUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]
-    const result = fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w800` : driveUrl
+
+    // Si es una URL de ninjaerp.com, devolverla tal como está
+    if (url.includes('ninjaerp.com')) {
+      console.log('ninjaerp.com URL detected, returning as-is:', url)
+      return url
+    }
+
+    // Para URLs de Google Drive (backward compatibility)
+    const fileId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]
+    const result = fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w800` : url
     console.log('convertToThumbnail result:', result)
     return result
   }
 
-  const convertToDownload = (driveUrl: string | undefined) => {
-    if (!driveUrl) return ''
-    const fileId = driveUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]
-    return fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : driveUrl
+  const convertToDownload = (url: string | undefined) => {
+    if (!url) return ''
+
+    // Si es una URL de ninjaerp.com, devolverla tal como está
+    if (url.includes('ninjaerp.com')) {
+      return url
+    }
+
+    // Para URLs de Google Drive (backward compatibility)
+    const fileId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]
+    return fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : url
   }
 
   const handleFormSubmit = async (data: FormData) => {
