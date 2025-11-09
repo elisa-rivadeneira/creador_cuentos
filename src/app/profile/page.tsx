@@ -76,7 +76,12 @@ export default function Profile() {
     if (!url) return ''
 
     // Si es una URL de ninjaerp.com, devolverla tal como está
-    if (url.includes('ninjaerp.com')) {
+    try {
+      if (url.includes('ninjaerp.com')) {
+        return url
+      }
+    } catch (error) {
+      console.error('Error checking ninjaerp.com URL in profile:', error)
       return url
     }
 
@@ -89,7 +94,12 @@ export default function Profile() {
     if (!url) return ''
 
     // Si es una URL de ninjaerp.com, devolverla tal como está
-    if (url.includes('ninjaerp.com')) {
+    try {
+      if (url.includes('ninjaerp.com')) {
+        return url
+      }
+    } catch (error) {
+      console.error('Error checking ninjaerp.com URL in profile:', error)
       return url
     }
 

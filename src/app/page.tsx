@@ -19,9 +19,14 @@ export default function Home() {
     }
 
     // Si es una URL de ninjaerp.com, devolverla tal como está
-    if (url.includes('ninjaerp.com')) {
-      console.log('ninjaerp.com URL detected, returning as-is:', url)
-      return url
+    try {
+      if (url.includes('ninjaerp.com')) {
+        console.log('ninjaerp.com URL detected, returning as-is:', url)
+        return url
+      }
+    } catch (error) {
+      console.error('Error checking ninjaerp.com URL:', error)
+      return url // Devolver la URL original en caso de error
     }
 
     // Para URLs de Google Drive (backward compatibility)
@@ -35,7 +40,12 @@ export default function Home() {
     if (!url) return ''
 
     // Si es una URL de ninjaerp.com, devolverla tal como está
-    if (url.includes('ninjaerp.com')) {
+    try {
+      if (url.includes('ninjaerp.com')) {
+        return url
+      }
+    } catch (error) {
+      console.error('Error checking ninjaerp.com URL in convertToDownload:', error)
       return url
     }
 

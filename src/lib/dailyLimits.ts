@@ -8,14 +8,29 @@ export interface DailyLimitResult {
 /**
  * Verifica si es un nuevo día (desde medianoche)
  */
-export function isNewDay(lastResetDate: Date | null): boolean {
+export function isNewDay(lastResetDate: Date | string | null): boolean {
   if (!lastResetDate) return true
 
-  const now = new Date()
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const lastReset = new Date(lastResetDate.getFullYear(), lastResetDate.getMonth(), lastResetDate.getDate())
+  try {
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
-  return today.getTime() > lastReset.getTime()
+    // Asegurar que lastResetDate sea un objeto Date
+    const resetDate = new Date(lastResetDate)
+
+    // Verificar que sea una fecha válida
+    if (isNaN(resetDate.getTime())) {
+      console.error('Invalid date provided to isNewDay:', lastResetDate)
+      return true // Si la fecha es inválida, considerar como nuevo día
+    }
+
+    const lastReset = new Date(resetDate.getFullYear(), resetDate.getMonth(), resetDate.getDate())
+
+    return today.getTime() > lastReset.getTime()
+  } catch (error) {
+    console.error('Error in isNewDay function:', error)
+    return true // En caso de error, considerar como nuevo día
+  }
 }
 
 /**
@@ -34,7 +49,7 @@ export function getNextMidnight(): Date {
 export function checkDailyLimits(
   isPaid: boolean,
   dailyStoriesCount: number,
-  lastResetDate: Date | null,
+  lastResetDate: Date | string | null,
   freeStoriesUsed: number
 ): DailyLimitResult {
   const newDay = isNewDay(lastResetDate)
