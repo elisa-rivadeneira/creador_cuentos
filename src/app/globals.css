@@ -41,7 +41,9 @@
            focus:outline-none focus:ring-2 focus:ring-primary-200 text-lg transition-all duration-200
            bg-white cursor-pointer;
   }
+}
 
+@layer utilities {
   /* Gold colors for premium */
   .bg-gold-50 {
     background-color: #fffbeb;
@@ -54,5 +56,8 @@
   }
   .text-gold-800 {
     color: #92400e;
+  }
+  .text-gold-600 {
+    color: #d97706;
   }
 }
