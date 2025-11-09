@@ -41,4 +41,18 @@
            focus:outline-none focus:ring-2 focus:ring-primary-200 text-lg transition-all duration-200
            bg-white cursor-pointer;
   }
+
+  /* Gold colors for premium */
+  .bg-gold-50 {
+    background-color: #fffbeb;
+  }
+  .bg-gold-500 {
+    background-color: #f59e0b;
+  }
+  .border-gold-300 {
+    border-color: #fcd34d;
+  }
+  .text-gold-800 {
+    color: #92400e;
+  }
 }

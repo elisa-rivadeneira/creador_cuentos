@@ -1,10 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import FormularioCuento from '@/components/FormularioCuento'
+import AuthButton from '@/components/AuthButton'
 import { FormData, StoryResult } from '@/types'
 
 export default function Home() {
+  const { data: session } = useSession()
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<StoryResult | null>(null)
 
@@ -58,6 +61,10 @@ export default function Home() {
   return (
     <main className="min-h-screen p-4">
       <div className="container mx-auto py-8">
+        <div className="flex justify-end mb-4">
+          <AuthButton />
+        </div>
+
         <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-fun text-white mb-4 drop-shadow-lg animate-float">
             🏰 Creador de Cuentos Mágicos 🏰
@@ -68,7 +75,7 @@ export default function Home() {
         </div>
 
         {!result ? (
-          <FormularioCuento onSubmit={handleFormSubmit} isLoading={isLoading} />
+          <FormularioCuento onSubmit={handleFormSubmit} isLoading={isLoading} session={session} />
         ) : (
           <div className="card max-w-4xl mx-auto">
             <div className="text-center mb-8">
@@ -77,8 +84,7 @@ export default function Home() {
               </h2>
               <p className="text-lg text-gray-600">
                 Tema: <span className="font-bold text-primary-600">{result.tema}</span> |
-                Grado: <span className="font-bold text-secondary-600">{result.grado}</span> |
-                Área: <span className="font-bold text-accent-600">{result.area}</span>
+                Grado: <span className="font-bold text-secondary-600">{result.grado}</span>
               </p>
             </div>
 

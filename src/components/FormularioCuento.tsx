@@ -1,31 +1,105 @@
 'use client'
 
 import { useState } from 'react'
+import { Session } from 'next-auth'
+import Link from 'next/link'
 import { FormData } from '@/types'
 
 interface Props {
   onSubmit: (data: FormData) => void
   isLoading: boolean
+  session: Session | null
 }
 
-export default function FormularioCuento({ onSubmit, isLoading }: Props) {
+export default function FormularioCuento({ onSubmit, isLoading, session }: Props) {
   const [formData, setFormData] = useState<FormData>({
     tema: '',
     ideas: '',
     grado: '',
-    area: '',
     formatoImagen: 'cabecera'
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (formData.tema && formData.grado && formData.area) {
+    if (formData.tema && formData.grado) {
       onSubmit(formData)
     }
   }
 
+  // Verificar si el usuario puede crear cuentos
+  const canCreateStory = () => {
+    if (!session?.user) return false
+
+    const freeStoriesUsed = session.user.freeStoriesUsed || 0
+    const isPaid = session.user.isPaid || false
+
+    if (isPaid) {
+      // Usuario premium: verificar si puede crear hoy
+      const lastStoryDate = session.user.lastStoryDate
+      if (!lastStoryDate) return true
+
+      const today = new Date()
+      const lastStory = new Date(lastStoryDate)
+      const diffTime = today.getTime() - lastStory.getTime()
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+      return diffDays >= 1
+    } else {
+      // Usuario gratuito: verificar si tiene cuentos restantes
+      return freeStoriesUsed < 2
+    }
+  }
+
+  const getStatusMessage = () => {
+    if (!session?.user) {
+      return {
+        type: 'warning',
+        message: '⚠️ Necesitas crear una cuenta para generar cuentos'
+      }
+    }
+
+    const freeStoriesUsed = session.user.freeStoriesUsed || 0
+    const isPaid = session.user.isPaid || false
+
+    if (isPaid) {
+      const lastStoryDate = session.user.lastStoryDate
+      if (lastStoryDate) {
+        const today = new Date()
+        const lastStory = new Date(lastStoryDate)
+        const diffTime = today.getTime() - lastStory.getTime()
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+        if (diffDays < 1) {
+          return {
+            type: 'warning',
+            message: '⏰ Ya creaste tu cuento de hoy. ¡Vuelve mañana!'
+          }
+        }
+      }
+      return {
+        type: 'success',
+        message: '⭐ ¡Usuario Premium! Puedes crear tu cuento diario'
+      }
+    } else {
+      const remaining = 2 - freeStoriesUsed
+      if (remaining > 0) {
+        return {
+          type: 'info',
+          message: `🎁 Te quedan ${remaining} cuentos gratis`
+        }
+      } else {
+        return {
+          type: 'error',
+          message: '💳 Cuentos gratis agotados. ¡Hazte Premium!'
+        }
+      }
+    }
+  }
+
+  const statusMessage = getStatusMessage()
+  const canCreate = canCreateStory()
+
   const grados = ['1°', '2°', '3°', '4°', '5°', '6°']
-  const areas = ['Ciencias Naturales', 'Ciencias Sociales', 'Matemáticas', 'Lenguaje', 'Inglés', 'Educación Física', 'Artes']
   const formatosImagen = [
     { value: 'cabecera', label: '🖼️ Imagen en Cabecera', desc: 'Imagen grande en la parte superior' },
     { value: 'lado', label: '📖 Imagen al Lado', desc: 'Imagen al costado del texto' },
@@ -41,6 +115,33 @@ export default function FormularioCuento({ onSubmit, isLoading }: Props) {
         <p className="text-gray-600 text-lg">
           ¡Vamos a crear un hermoso cuento para tus estudiantes!
         </p>
+      </div>
+
+      {/* Status Message */}
+      <div className={`mb-6 p-4 rounded-lg border-2 ${
+        statusMessage.type === 'success' ? 'bg-green-50 border-green-300 text-green-800' :
+        statusMessage.type === 'info' ? 'bg-blue-50 border-blue-300 text-blue-800' :
+        statusMessage.type === 'warning' ? 'bg-yellow-50 border-yellow-300 text-yellow-800' :
+        'bg-red-50 border-red-300 text-red-800'
+      }`}>
+        <p className="text-center font-bold">{statusMessage.message}</p>
+        {!session?.user && (
+          <div className="text-center mt-3">
+            <Link href="/auth/signup" className="btn-primary mr-2">
+              🎁 Crear Cuenta Gratis
+            </Link>
+            <Link href="/auth/signin" className="btn-secondary">
+              🔑 Iniciar Sesión
+            </Link>
+          </div>
+        )}
+        {session?.user && !session.user.isPaid && (session.user.freeStoriesUsed || 0) >= 2 && (
+          <div className="text-center mt-3">
+            <Link href="/payment" className="btn-primary">
+              💳 Hazte Premium (20 soles)
+            </Link>
+          </div>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -71,44 +172,23 @@ export default function FormularioCuento({ onSubmit, isLoading }: Props) {
           />
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="block text-lg font-bold text-secondary-700">
-              📚 Grado
-            </label>
-            <select
-              value={formData.grado}
-              onChange={(e) => setFormData({ ...formData, grado: e.target.value })}
-              className="select-field"
-              required
-            >
-              <option value="">Selecciona el grado</option>
-              {grados.map((grado) => (
-                <option key={grado} value={grado}>
-                  {grado} Primaria
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-lg font-bold text-accent-600">
-              📖 Área de Estudio
-            </label>
-            <select
-              value={formData.area}
-              onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-              className="select-field"
-              required
-            >
-              <option value="">Selecciona el área</option>
-              {areas.map((area) => (
-                <option key={area} value={area}>
-                  {area}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="space-y-2">
+          <label className="block text-lg font-bold text-secondary-700">
+            📚 Grado
+          </label>
+          <select
+            value={formData.grado}
+            onChange={(e) => setFormData({ ...formData, grado: e.target.value })}
+            className="select-field"
+            required
+          >
+            <option value="">Selecciona el grado</option>
+            {grados.map((grado) => (
+              <option key={grado} value={grado}>
+                {grado} Primaria
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* <div className="space-y-3">
@@ -149,9 +229,9 @@ export default function FormularioCuento({ onSubmit, isLoading }: Props) {
         <div className="text-center pt-4">
           <button
             type="submit"
-            disabled={isLoading || !formData.tema || !formData.grado || !formData.area}
+            disabled={isLoading || !formData.tema || !formData.grado || !canCreate}
             className={`btn-primary text-xl font-fun min-w-[200px] ${
-              isLoading ? 'opacity-50 cursor-not-allowed' : ''
+              isLoading || !canCreate ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
             {isLoading ? (

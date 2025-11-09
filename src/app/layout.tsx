@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import SessionProvider from '@/components/SessionProvider'
 
 export const metadata: Metadata = {
   title: 'Creador de Cuentos Mágicos ✨',
@@ -14,9 +15,11 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="font-comic">
-        <div className="min-h-screen bg-gradient-to-br from-blue-400 via-cyan-400 to-green-400">
-          {children}
-        </div>
+        <SessionProvider>
+          <div className="min-h-screen bg-gradient-to-br from-blue-400 via-cyan-400 to-green-400">
+            {children}
+          </div>
+        </SessionProvider>
       </body>
     </html>
   )
