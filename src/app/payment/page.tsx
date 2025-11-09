@@ -83,7 +83,7 @@ export default function Payment() {
     {
       emoji: '💸',
       title: 'Yapea 20 soles',
-      desc: 'Envía 20 soles al número 987-654-321'
+      desc: 'Envía 20 soles al número 967-717-179'
     },
     {
       emoji: '📸',
