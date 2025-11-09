@@ -39,10 +39,10 @@ export default function Home() {
   const convertToDownload = (url: string | undefined) => {
     if (!url) return ''
 
-    // Si es una URL de ninjaerp.com, devolverla tal como está
+    // Si es una URL de ninjaerp.com, usar el proxy de descarga
     try {
       if (url.includes('ninjaerp.com')) {
-        return url
+        return `/api/download?url=${encodeURIComponent(url)}`
       }
     } catch (error) {
       console.error('Error checking ninjaerp.com URL in convertToDownload:', error)
