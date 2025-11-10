@@ -54,6 +54,8 @@ model User {
 
   stories         Story[]
   payments        Payment[]
+  ratings         Rating[]
+  comments        Comment[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -79,6 +81,8 @@ model Story {
   fichaUrl    String?
 
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ratings     Rating[]
+  comments    Comment[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -96,4 +100,32 @@ model Payment {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Rating {
+  id        String   @id @default(cuid())
+  storyId   String
+  userId    String
+  rating    Int      // 1-5 estrellas
+
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([storyId, userId]) // Un usuario solo puede calificar una vez por cuento
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  storyId   String
+  userId    String
+  content   String   // El comentario
+
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

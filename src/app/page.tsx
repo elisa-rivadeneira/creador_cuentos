@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import FormularioCuento from '@/components/FormularioCuento'
 import AuthButton from '@/components/AuthButton'
+import StoryGallery from '@/components/StoryGallery'
 import { FormData, StoryResult } from '@/types'
 
 export default function Home() {
@@ -177,6 +178,11 @@ export default function Home() {
             </div>
           </div>
         )}
+
+        {/* Galería de cuentos */}
+        <div className="mt-20">
+          <StoryGallery limit={8} />
+        </div>
 
         <div className="text-center mt-12">
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3">
