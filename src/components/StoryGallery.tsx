@@ -159,7 +159,7 @@ export default function StoryGallery({ limit = 12, showTitle = true }: StoryGall
                 <img
                   src={convertToThumbnail(story.cuentoUrl)}
                   alt={story.tema}
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                  className="w-full h-full object-cover object-top transition-transform duration-300 hover:scale-110"
                   loading="lazy"
                 />
               ) : (

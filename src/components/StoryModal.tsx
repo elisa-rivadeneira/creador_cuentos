@@ -228,18 +228,18 @@ export default function StoryModal({ story, isOpen, onClose, onUpdate }: StoryMo
             </div>
 
             {/* Imagen */}
-            <div className="flex-1 bg-gray-100 flex items-center justify-center p-4">
+            <div className="flex-1 bg-gray-100 overflow-auto">
               {currentImageUrl ? (
-                <div className="relative max-w-full max-h-full">
+                <div className="relative min-h-full flex items-start justify-center p-4">
                   <img
                     src={convertToThumbnail(currentImageUrl)}
                     alt={currentView === 'cuento' ? story.tema : 'Ficha de comprensión'}
-                    className={`max-w-full max-h-full object-contain cursor-pointer transition-transform duration-300 ${
+                    className={`w-full object-contain cursor-pointer transition-transform duration-300 ${
                       expandedImage ? 'scale-150' : 'hover:scale-105'
                     }`}
                     onClick={() => setExpandedImage(!expandedImage)}
                   />
-                  <div className="absolute top-2 right-2 flex gap-2">
+                  <div className="absolute top-6 right-6 flex gap-2 z-10">
                     <button
                       onClick={() => setExpandedImage(!expandedImage)}
                       className="bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
