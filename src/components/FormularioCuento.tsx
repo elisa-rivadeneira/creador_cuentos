@@ -19,10 +19,11 @@ export default function FormularioCuento({ onSubmit, isLoading, session }: Props
     grado: '',
     formatoImagen: 'cabecera'
   })
+  const [incluirComprension, setIncluirComprension] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (formData.tema && formData.grado) {
+    if (formData.tema && (!incluirComprension || formData.grado)) {
       onSubmit(formData)
     }
   }
@@ -162,23 +163,42 @@ export default function FormularioCuento({ onSubmit, isLoading, session }: Props
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-lg font-bold text-secondary-700">
-            📚 Grado
-          </label>
-          <select
-            value={formData.grado}
-            onChange={(e) => setFormData({ ...formData, grado: e.target.value })}
-            className="select-field"
-            required
-          >
-            <option value="">Selecciona el grado</option>
-            {grados.map((grado) => (
-              <option key={grado} value={grado}>
-                {grado} Primaria
-              </option>
-            ))}
-          </select>
+        <div className="space-y-4">
+          <div className="space-y-3">
+            <h3 className="text-xl font-bold text-primary-700">📖 Comprensión Lectora</h3>
+            <label className="flex items-center space-x-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={incluirComprension}
+                onChange={(e) => setIncluirComprension(e.target.checked)}
+                className="w-5 h-5 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 focus:ring-2"
+              />
+              <span className="text-lg font-medium text-gray-700">
+                Incluir ficha de comprensión lectora
+              </span>
+            </label>
+          </div>
+
+          {incluirComprension && (
+            <div className="space-y-2 pl-4 border-l-4 border-primary-200 bg-primary-50/30 p-4 rounded-r-lg">
+              <label className="block text-lg font-bold text-secondary-700">
+                📚 Grado
+              </label>
+              <select
+                value={formData.grado}
+                onChange={(e) => setFormData({ ...formData, grado: e.target.value })}
+                className="select-field"
+                required={incluirComprension}
+              >
+                <option value="">Selecciona el grado</option>
+                {grados.map((grado) => (
+                  <option key={grado} value={grado}>
+                    {grado} Primaria
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         {/* <div className="space-y-3">
@@ -219,7 +239,7 @@ export default function FormularioCuento({ onSubmit, isLoading, session }: Props
         <div className="text-center pt-4">
           <button
             type="submit"
-            disabled={isLoading || !formData.tema || !formData.grado || !canCreate}
+            disabled={isLoading || !formData.tema || (incluirComprension && !formData.grado) || !canCreate}
             className={`btn-primary text-xl font-fun min-w-[200px] ${
               isLoading || !canCreate ? 'opacity-50 cursor-not-allowed' : ''
             }`}
