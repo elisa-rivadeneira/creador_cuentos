@@ -67,6 +67,8 @@ export async function POST(request: NextRequest) {
         ideas: formData.ideas,
         grado: formData.grado,
         formato_imagen: formData.formatoImagen,
+        tamano: formData.tamano,
+        incluir_comprension: formData.incluirComprension || false,
         timestamp: new Date().toISOString()
       }),
     })

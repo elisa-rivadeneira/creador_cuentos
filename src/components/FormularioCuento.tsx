@@ -32,7 +32,10 @@ export default function FormularioCuento({ onSubmit, isLoading, session }: Props
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.tema && (!incluirComprension || formData.grado)) {
-      onSubmit(formData)
+      onSubmit({
+        ...formData,
+        incluirComprension
+      })
     }
   }
 

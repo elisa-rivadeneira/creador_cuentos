@@ -6,6 +6,7 @@ export interface FormData {
   grado: string;
   formatoImagen: 'cabecera' | 'lado' | 'cuadrado';
   tamano: 'corto' | 'mediano' | 'largo';
+  incluirComprension?: boolean;
 }
 
 export interface StoryResult {
