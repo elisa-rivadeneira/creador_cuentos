@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Session } from 'next-auth'
 import Link from 'next/link'
 import { FormData } from '@/types'
@@ -17,9 +17,17 @@ export default function FormularioCuento({ onSubmit, isLoading, session }: Props
     tema: '',
     ideas: '',
     grado: '',
-    formatoImagen: 'cabecera'
+    formatoImagen: 'cabecera',
+    tamano: 'corto'
   })
   const [incluirComprension, setIncluirComprension] = useState(false)
+
+  // Resetear tamaño a "corto" si el usuario no es premium y tiene seleccionado mediano/largo
+  useEffect(() => {
+    if (!session?.user?.isPaid && (formData.tamano === 'mediano' || formData.tamano === 'largo')) {
+      setFormData(prev => ({ ...prev, tamano: 'corto' }))
+    }
+  }, [session?.user?.isPaid, formData.tamano])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -161,6 +169,94 @@ export default function FormularioCuento({ onSubmit, isLoading, session }: Props
             className="input-field min-h-[100px] resize-none"
             rows={4}
           />
+        </div>
+
+        <div className="space-y-3">
+          <label className="block text-lg font-bold text-success-700">
+            📏 Tamaño del cuento
+          </label>
+          <div className="grid gap-3">
+            <label
+              className={`flex items-center p-4 rounded-xl border-4 cursor-pointer transition-all duration-200 ${
+                formData.tamano === 'corto'
+                  ? 'border-success-400 bg-success-50 shadow-lg'
+                  : 'border-gray-200 hover:border-success-300 hover:bg-success-50/25'
+              }`}
+            >
+              <input
+                type="radio"
+                name="tamano"
+                value="corto"
+                checked={formData.tamano === 'corto'}
+                onChange={(e) => setFormData({ ...formData, tamano: e.target.value as FormData['tamano'] })}
+                className="sr-only"
+              />
+              <div>
+                <div className="text-lg font-bold text-gray-800">
+                  📄 Cuento corto (1-2 páginas)
+                </div>
+                <div className="text-sm text-gray-600">
+                  Perfecto para lecturas rápidas • Disponible para todos
+                </div>
+              </div>
+            </label>
+
+            <label
+              className={`flex items-center p-4 rounded-xl border-4 transition-all duration-200 ${
+                formData.tamano === 'mediano'
+                  ? 'border-success-400 bg-success-50 shadow-lg'
+                  : session?.user?.isPaid
+                  ? 'border-gray-200 hover:border-success-300 hover:bg-success-50/25 cursor-pointer'
+                  : 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-60'
+              }`}
+            >
+              <input
+                type="radio"
+                name="tamano"
+                value="mediano"
+                checked={formData.tamano === 'mediano'}
+                onChange={(e) => session?.user?.isPaid && setFormData({ ...formData, tamano: e.target.value as FormData['tamano'] })}
+                disabled={!session?.user?.isPaid}
+                className="sr-only"
+              />
+              <div className="flex-1">
+                <div className="text-lg font-bold text-gray-800">
+                  📖 Cuento mediano (3-4 páginas) {!session?.user?.isPaid && '🔒'}
+                </div>
+                <div className="text-sm text-gray-600">
+                  {session?.user?.isPaid ? 'Ideal para desarrollar la historia' : 'Requiere cuenta Premium'}
+                </div>
+              </div>
+            </label>
+
+            <label
+              className={`flex items-center p-4 rounded-xl border-4 transition-all duration-200 ${
+                formData.tamano === 'largo'
+                  ? 'border-success-400 bg-success-50 shadow-lg'
+                  : session?.user?.isPaid
+                  ? 'border-gray-200 hover:border-success-300 hover:bg-success-50/25 cursor-pointer'
+                  : 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-60'
+              }`}
+            >
+              <input
+                type="radio"
+                name="tamano"
+                value="largo"
+                checked={formData.tamano === 'largo'}
+                onChange={(e) => session?.user?.isPaid && setFormData({ ...formData, tamano: e.target.value as FormData['tamano'] })}
+                disabled={!session?.user?.isPaid}
+                className="sr-only"
+              />
+              <div className="flex-1">
+                <div className="text-lg font-bold text-gray-800">
+                  📚 Cuento largo (5-6 páginas) {!session?.user?.isPaid && '🔒'}
+                </div>
+                <div className="text-sm text-gray-600">
+                  {session?.user?.isPaid ? 'Perfecto para historias complejas' : 'Requiere cuenta Premium'}
+                </div>
+              </div>
+            </label>
+          </div>
         </div>
 
         <div className="space-y-4">

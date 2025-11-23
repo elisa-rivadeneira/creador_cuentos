@@ -5,6 +5,7 @@ export interface FormData {
   ideas: string;
   grado: string;
   formatoImagen: 'cabecera' | 'lado' | 'cuadrado';
+  tamano: 'corto' | 'mediano' | 'largo';
 }
 
 export interface StoryResult {
